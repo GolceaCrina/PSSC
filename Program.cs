@@ -1,41 +1,92 @@
-var builder = WebApplication.CreateBuilder(args);
+using PSSC_Proiect.Domain.Models;
+using PSSC_Proiect.Domain.Services;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+var cartService = new CartService();
+bool running = true;
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+while (running)
 {
-    app.MapOpenApi();
+    Console.WriteLine("\nShopping Cart Menu:");
+    Console.WriteLine("1. Add product");
+    Console.WriteLine("2. Remove product");
+    Console.WriteLine("3. Display cart");
+    Console.WriteLine("4. Calculate total");
+    Console.WriteLine("5. Exit");
+
+    Console.Write("Choose an option: ");
+    var choice = Console.ReadLine();
+
+    switch (choice)
+    {
+        case "1":
+            AddProductToCart(cartService);
+            break;
+        case "2":
+            RemoveProductFromCart(cartService);
+            break;
+        case "3":
+            cartService.DisplayCart();
+            break;
+        case "4":
+            Console.WriteLine($"Total price: {cartService.CalculateTotal():C}");
+            break;
+        case "5":
+            running = false;
+            break;
+        default:
+            Console.WriteLine("Invalid option. Please try again.");
+            break;
+    }
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+static void AddProductToCart(CartService cartService)
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    Console.Write("Enter product name: ");
+    var name = Console.ReadLine();
 
-app.MapGet("/weatherforecast", () =>
+    Console.Write("Enter product price: ");
+    if (!decimal.TryParse(Console.ReadLine(), out var price))
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+        Console.WriteLine("Invalid price.");
+        return;
+    }
 
-app.Run();
+    Console.Write("Enter quantity type (units/kilograms): ");
+    var quantityType = Console.ReadLine()?.ToLower();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+    IQuantity quantity = quantityType switch
+    {
+        "units" => new UnitQuantity(GetIntegerQuantity()),
+        "kilograms" => new KilogramQuantity(GetDecimalQuantity()),
+        _ => null
+    };
+
+    if (quantity == null)
+    {
+        Console.WriteLine("Invalid quantity type.");
+        return;
+    }
+
+    cartService.AddItem(new Product(name, price), quantity);
+    Console.WriteLine("Product added to cart.");
+}
+
+static void RemoveProductFromCart(CartService cartService)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    Console.Write("Enter product name to remove: ");
+    var productName = Console.ReadLine();
+    cartService.RemoveItem(productName);
+    Console.WriteLine("Product removed from cart.");
+}
+
+static int GetIntegerQuantity()
+{
+    Console.Write("Enter quantity (units): ");
+    return int.TryParse(Console.ReadLine(), out var units) ? units : 0;
+}
+
+static decimal GetDecimalQuantity()
+{
+    Console.Write("Enter quantity (kilograms): ");
+    return decimal.TryParse(Console.ReadLine(), out var kilograms) ? kilograms : 0;
 }
