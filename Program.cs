@@ -12,9 +12,11 @@ while (running)
     Console.WriteLine("3. Display cart");
     Console.WriteLine("4. Calculate total");
     Console.WriteLine("5. Exit");
-
+    Console.WriteLine("6. alegere cart");
     Console.Write("Choose an option: ");
     var choice = Console.ReadLine();
+    
+    
 
     switch (choice)
     {
