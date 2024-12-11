@@ -12,7 +12,7 @@ while (running)
     Console.WriteLine("3. Display cart");
     Console.WriteLine("4. Calculate total");
     Console.WriteLine("5. Exit");
-    Console.Write("Choose an option: ");
+    Console.Write("Choose an option ");
     var choice = Console.ReadLine();
     
     
