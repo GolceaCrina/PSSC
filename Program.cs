@@ -1,93 +1,37 @@
-using PSSC_Proiect.Domain.Models;
-using PSSC_Proiect.Domain.Services;
+using Microsoft.EntityFrameworkCore;
+using PSSC_Proiect.Data;
+using PSSC_Proiect.Data.Repositories;
 
-var cartService = new CartService();
-bool running = true;
+var builder = WebApplication.CreateBuilder(args);
 
-while (running)
+builder.Services.AddControllers();
+builder.Services.AddScoped<IComandaRepository, ComandaRepository>();
+
+// Adăugăm configurația bazei de date
+builder.Services.AddDbContext<ContextAplicatie>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 30))
+    )
+);
+
+// Adăugăm suport pentru Swagger (opțional, util pentru testare)
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Activăm Swagger în modul Development
+if (app.Environment.IsDevelopment())
 {
-    Console.WriteLine("\nShopping Cart Menu:");
-    Console.WriteLine("1. Add product");
-    Console.WriteLine("2. Remove product");
-    Console.WriteLine("3. Display cart");
-    Console.WriteLine("4. Calculate total");
-    Console.WriteLine("5. Exit");
-    Console.Write("Choose an option ");
-    var choice = Console.ReadLine();
-    
-    
-
-    switch (choice)
-    {
-        case "1":
-            AddProductToCart(cartService);
-            break;
-        case "2":
-            RemoveProductFromCart(cartService);
-            break;
-        case "3":
-            cartService.DisplayCart();
-            break;
-        case "4":
-            Console.WriteLine($"Total price: {cartService.CalculateTotal():C}");
-            break;
-        case "5":
-            running = false;
-            break;
-        default:
-            Console.WriteLine("Invalid option. Please try again.");
-            break;
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-static void AddProductToCart(CartService cartService)
-{
-    Console.Write("Enter product name: ");
-    var name = Console.ReadLine();
+app.UseHttpsRedirection();
 
-    Console.Write("Enter product price: ");
-    if (!decimal.TryParse(Console.ReadLine(), out var price))
-    {
-        Console.WriteLine("Invalid price.");
-        return;
-    }
+app.UseAuthorization();
 
-    Console.Write("Enter quantity type (units/kilograms): ");
-    var quantityType = Console.ReadLine()?.ToLower();
+app.MapControllers();
 
-    IQuantity quantity = quantityType switch
-    {
-        "units" => new UnitQuantity(GetIntegerQuantity()),
-        "kilograms" => new KilogramQuantity(GetDecimalQuantity()),
-        _ => null
-    };
-
-    if (quantity == null)
-    {
-        Console.WriteLine("Invalid quantity type.");
-        return;
-    }
-
-    cartService.AddItem(new Product(name, price), quantity);
-    Console.WriteLine("Product added to cart.");
-}
-
-static void RemoveProductFromCart(CartService cartService)
-{
-    Console.Write("Enter product name to remove: ");
-    var productName = Console.ReadLine();
-    cartService.RemoveItem(productName);
-    Console.WriteLine("Product removed from cart.");
-}
-
-static int GetIntegerQuantity()
-{
-    Console.Write("Enter quantity (units): ");
-    return int.TryParse(Console.ReadLine(), out var units) ? units : 0;
-}
-
-static decimal GetDecimalQuantity()
-{
-    Console.Write("Enter quantity (kilograms): ");
-    return decimal.TryParse(Console.ReadLine(), out var kilograms) ? kilograms : 0;
-}
+app.Run();
