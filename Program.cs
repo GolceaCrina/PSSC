@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<IComandaRepository, ComandaRepository>();
 
-// Adăugăm configurația bazei de date
 builder.Services.AddDbContext<ContextAplicatie>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -15,13 +14,11 @@ builder.Services.AddDbContext<ContextAplicatie>(options =>
     )
 );
 
-// Adăugăm suport pentru Swagger (opțional, util pentru testare)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Activăm Swagger în modul Development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
