@@ -4,9 +4,9 @@ using PSSC_Proiect.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurare servicii
 builder.Services.AddControllers();
 builder.Services.AddScoped<IComandaRepository, ComandaRepository>();
-
 builder.Services.AddDbContext<ContextAplicatie>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -14,11 +14,13 @@ builder.Services.AddDbContext<ContextAplicatie>(options =>
     )
 );
 
+// Adaugare Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Configurări dezvoltare
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -26,9 +28,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

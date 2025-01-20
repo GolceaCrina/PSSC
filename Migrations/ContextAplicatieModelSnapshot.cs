@@ -32,12 +32,57 @@ namespace PSSC_Proiect.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<decimal>("Total")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Comenzi");
+                });
+
+            modelBuilder.Entity("PSSC_Proiect.Domain.Models.Expediere", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ComandaId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DataExpedierii")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Expedieri");
+                });
+
+            modelBuilder.Entity("PSSC_Proiect.Domain.Models.Factura", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ComandaId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DataEmiterii")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Facturi");
                 });
 
             modelBuilder.Entity("PSSC_Proiect.Domain.Models.LinieComanda", b =>
@@ -53,7 +98,7 @@ namespace PSSC_Proiect.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<decimal>("Pret")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("ProdusId")
                         .HasColumnType("char(36)");
@@ -82,7 +127,7 @@ namespace PSSC_Proiect.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<decimal>("Pret")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Stoc")
                         .HasColumnType("int");
@@ -95,7 +140,7 @@ namespace PSSC_Proiect.Migrations
             modelBuilder.Entity("PSSC_Proiect.Domain.Models.LinieComanda", b =>
                 {
                     b.HasOne("PSSC_Proiect.Domain.Models.Comanda", null)
-                        .WithMany()
+                        .WithMany("LiniiComanda")
                         .HasForeignKey("ComandaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -105,6 +150,11 @@ namespace PSSC_Proiect.Migrations
                         .HasForeignKey("ProdusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PSSC_Proiect.Domain.Models.Comanda", b =>
+                {
+                    b.Navigation("LiniiComanda");
                 });
 #pragma warning restore 612, 618
         }

@@ -21,11 +21,44 @@ namespace PSSC_Proiect.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Adresa = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Total = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
+                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comenzi", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Expedieri",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ComandaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Status = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DataExpedierii = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Expedieri", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Facturi",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ComandaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    DataEmiterii = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Facturi", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -38,7 +71,7 @@ namespace PSSC_Proiect.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Nume = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Pret = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    Pret = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Stoc = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -55,7 +88,7 @@ namespace PSSC_Proiect.Migrations
                     ComandaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     ProdusId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Cantitate = table.Column<int>(type: "int", nullable: false),
-                    Pret = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
+                    Pret = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,6 +122,12 @@ namespace PSSC_Proiect.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Expedieri");
+
+            migrationBuilder.DropTable(
+                name: "Facturi");
+
             migrationBuilder.DropTable(
                 name: "LiniiComanda");
 
